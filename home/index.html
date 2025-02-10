@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goto Pares Atbp.</title>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="logo.png" alt="Logo">
+        </div>
+        <div class="nav-links">
+            <a href="#">Menu</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="menu" id="menu">
+            <h2>Menu</h2>
+            <div class="category">
+                <h3>Silog Meals</h3>
+                <div class="menu-items">
+                    <div class="menu-item"><img src="food1.jpg" alt="Food"><h4>Tapsilog</h4><p>Marinated beef with garlic rice and egg.</p><p>₱120</p><button class="order-button" onclick="addToCart('Tapsilog', 120)">Order</button></div>
+                    <div class="menu-item"><img src="food2.jpg" alt="Food"><h4>Tocilog</h4><p>Sweet cured pork with garlic rice and egg.</p><p>₱110</p><button class="order-button" onclick="addToCart('Tocilog', 110)">Order</button></div>
+                    <div class="menu-item"><img src="food3.jpg" alt="Food"><h4>Longsilog</h4><p>Sweet and savory sausage with garlic rice and egg.</p><p>₱100</p><button class="order-button" onclick="addToCart('Longsilog', 100)">Order</button></div>
+                    <div class="menu-item"><img src="food4.jpg" alt="Food"><h4>Bangsilog</h4><p>Fried milkfish with garlic rice and egg.</p><p>₱130</p><button class="order-button" onclick="addToCart('Bangsilog', 130)">Order</button></div>
+                </div>
+            </div>
+        </div>
+        <div class="cart" id="cart">
+            <h2>Order Summary</h2>
+            <div id="cart-items"></div>
+            <h3>Total: ₱<span id="total-price">0</span></h3>
+            <button onclick="proceedToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+</body>
+</html>
