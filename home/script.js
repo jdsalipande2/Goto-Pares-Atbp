@@ -61,11 +61,11 @@ function proceedToCheckout() {
         : "none";
 }
 
-// Select Payment Method (Gcash/COD)
+// Select Payment Method (Gcash/Cash)
 function selectPayment(method) {
     selectedPayment = method;
     document.getElementById("gcash").classList.toggle("selected", method === "Gcash");
-    document.getElementById("cod").classList.toggle("selected", method === "COD");
+    document.getElementById("cash").classList.toggle("selected", method === "Cash");
 }
 
 // Place Order and Show Order Summary (inside cart)
