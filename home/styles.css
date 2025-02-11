@@ -1,111 +1,239 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+body {
+    background-color: #f1b60f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f1b60f;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 15px 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 15px 20px;
-            background-color: #fff;
-            border-radius: 5px;
-        }
+.logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
 
-        .logo img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-        }
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
 
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
+.nav-links a {
+    color: #f1b60f;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
 
-        .nav-links a {
-            color: #f1b60f;
-            text-decoration: none;
-            font-size: 16px;
-        }
+.nav-links a:hover {
+    color: #d19c0f;
+}
 
-        .nav-links a:hover {
-            text-decoration: underline;
-        }
+.container {
+    display: flex;
+    width: 100%;
+    margin-top: 20px;
+    gap: 20px;
+}
 
-        .container {
-            display: flex;
-            width: 100%;
-            margin-top: 20px;
-        }
+.menu {
+    flex: 3;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-        .menu {
-            flex: 3;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-        }
+.cart {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-        .cart {
-            flex: 1;
-            background: white;
-            padding: 20px;
-            margin-left: 20px;
-            border-radius: 5px;
-        }
+.category {
+    margin-bottom: 20px;
+}
 
-        .category {
-            margin-bottom: 20px;
-        }
+.menu-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
 
-        .menu-items {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
+.menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-        .menu-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background: #fff;
-            text-align: center;
-            width: 100%;
-        }
+.menu-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
 
-        .menu-item img {
-            width: 200px;
-            height: 120px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            object-fit: cover;
-        }
+.menu-item img {
+    width: 200px;
+    height: 120px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    object-fit: cover;
+}
 
-        .order-button {
-            margin-top: 10px;
-            background: #f1b60f;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
+/* Buttons */
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
 
-        .order-button:hover {
-            background: #d19c0f;
-        }
-    
+.order-button {
+    background: #f1b60f;
+    color: white;
+    font-weight: bold;
+}
+
+.order-button:hover {
+    background: #d19c0f;
+    transform: scale(1.05);
+}
+
+.order-method button {
+    margin: 5px;
+    background: #ddd;
+    color: black;
+    font-weight: bold;
+}
+
+.order-method .selected {
+    background: #f1b60f;
+    color: white;
+}
+
+.order-method button:hover {
+    background: #d19c0f;
+    color: white;
+}
+
+#gcash, #cod {
+    margin: 5px;
+    background: #ddd;
+    color: black;
+    font-weight: bold;
+}
+
+.selected {
+    background: #f1b60f !important;
+    color: white !important;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border 0.3s ease;
+}
+
+input:focus {
+    border-color: #f1b60f;
+    outline: none;
+}
+
+/* Cart Items */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+.cart-item input {
+    width: 50px;
+    text-align: center;
+}
+
+/* Order Summary */
+#order-summary {
+    margin-top: 15px;
+    padding: 20px;
+    background: #fff3cd;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#order-summary h3 {
+    color: #d19c0f;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+#order-summary p, #order-summary ul {
+    font-size: 16px;
+    color: #333;
+    margin: 5px 0;
+}
+
+#order-summary ul {
+    list-style: none;
+    padding: 0;
+}
+
+#order-summary li {
+    background: #fff;
+    padding: 8px;
+    border-radius: 5px;
+    margin: 5px 0;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#order-summary button {
+    background: #f1b60f;
+    color: white;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+#order-summary button:hover {
+    background: #d19c0f;
+}
