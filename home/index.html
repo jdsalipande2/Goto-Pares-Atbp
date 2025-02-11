@@ -48,7 +48,7 @@
                 <h3>Extras</h3>
                 <div class="menu-items">
                     <div class="menu-item"><img src="assets/extras-rice.jpeg" alt="Food"><h4>Rice</h4><p>Description</p><p>₱25</p><button class="order-button" onclick="addToCart('Rice', 25)">Order</button></div>
-                    <div class="menu-item"><img src="assets/extras-egg.jpeg" alt="Food"><h4>Egg</h4><p>Description</p><p>₱25</p><button class="order-button" onclick="addToCart('Egg', 25)">Order</button></div>
+                    <div class="menu-item"><img src="assets/alacarte-egg.jpeg" alt="Food"><h4>Egg</h4><p>Description</p><p>₱25</p><button class="order-button" onclick="addToCart('Egg', 25)">Order</button></div>
                 </div>
             </div>
 
@@ -63,12 +63,43 @@
             </div>
             
         </div>
+      
         <div class="cart" id="cart">
-            <h2>Order Summary</h2>
-            <div id="cart-items"></div>
-            <h3>Total: ₱<span id="total-price">0</span></h3>
-            <button onclick="proceedToCheckout()">Proceed to Checkout</button>
-        </div>
+    <h2>Order Summary</h2>
+
+    <!-- Delivery & Pick-up Selection -->
+    <div class="order-method">
+        <button id="delivery" class="selected" onclick="selectMethod('Delivery')">Delivery</button>
+        <button id="pickup" onclick="selectMethod('Pick-up')">Pick-up</button>
     </div>
+
+    <div id="cart-items"></div>
+    <h3>Total: ₱<span id="total-price">0</span></h3>
+    <button onclick="proceedToCheckout()">Proceed to Checkout</button>
+
+    <!-- Checkout Form (Hidden Initially) -->
+<div id="checkout-form" style="display: none; margin-top: 15px;">
+    <h2>Checkout</h2>
+    <label>First Name:</label>
+    <input type="text" id="first-name">
+    <label>Last Name:</label>
+    <input type="text" id="last-name">
+    <label>Email:</label>
+    <input type="email" id="email">
+    <label>Address:</label>
+    <input type="text" id="address">
+
+    <h3>Payment Method</h3>
+    <button id="gcash" class="selected" onclick="selectPayment('Gcash')">Gcash</button>
+    <button id="cod" onclick="selectPayment('COD')">COD</button>
+
+    <button onclick="placeOrder()">Place Order</button>
+</div>
+
+<!-- Order Summary Inside Cart -->
+<div id="order-summary" style="margin-top: 15px;"></div>
+
+  
+<script src="script.js"></script>
 </body>
 </html>
