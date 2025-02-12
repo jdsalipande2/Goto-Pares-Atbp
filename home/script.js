@@ -1,3 +1,10 @@
+import { createClient } from "@supabase/supabase-js";
+
+// Initialize Supabase
+const SUPABASE_URL = "https://etmxbelqfwpbrvtucxhr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0bXhiZWxxZndwYnJ2dHVjeGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkzMTk1NDIsImV4cCI6MjA1NDg5NTU0Mn0.XWOH2RMftx_JO-UCABTSnI4kv_-h8-Y-J8z6v_FJ5ro";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 let cart = [];
 let selectedMethod = "Delivery";
 let selectedPayment = "Gcash";
@@ -68,18 +75,40 @@ function selectPayment(method) {
     document.getElementById("cash").classList.toggle("selected", method === "Cash");
 }
 
-// Place Order and Show Order Summary (inside cart)
-function placeOrder() {
+// Place Order and Save to Supabase
+async function placeOrder() {
     const firstName = document.getElementById("first-name").value;
     const lastName = document.getElementById("last-name").value;
     const email = document.getElementById("email").value;
     const address = document.getElementById("address").value;
+    const totalPrice = document.getElementById("total-price").textContent;
 
     if (!firstName || !lastName || !email || !address) {
         alert("Please fill in all fields before placing your order.");
         return;
     }
 
+    // Save order to Supabase
+    const { data, error } = await supabase.from("orders").insert([
+        {
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            address: address,
+            order_method: selectedMethod,
+            payment_method: selectedPayment,
+            items: cart,
+            total_price: totalPrice
+        }
+    ]);
+
+    if (error) {
+        console.error("Error saving order:", error);
+        alert("Something went wrong while placing your order.");
+        return;
+    }
+
+    // Show Order Summary
     let orderSummary = `<h3>Thank you for ordering, ${firstName} ${lastName}!</h3>`;
     orderSummary += `<p>Email: ${email}</p>`;
     orderSummary += `<p>Address: ${address}</p>`;
@@ -91,19 +120,14 @@ function placeOrder() {
         orderSummary += `<li>${item.name} - ₱${item.price} x ${item.qty}</li>`;
     });
 
-    orderSummary += `</ul><h3>Total: ₱${document.getElementById('total-price').textContent}</h3>`;
-    
-    // Add "Order Again" button
+    orderSummary += `</ul><h3>Total: ₱${totalPrice}</h3>`;
     orderSummary += `<button onclick="orderAgain()">Order Again</button>`;
 
-    // Show summary inside cart
     document.getElementById("order-summary").innerHTML = orderSummary;
 
     // Clear cart after placing order
     cart = [];
     updateCart();
-
-    // Hide checkout form after placing order
     document.getElementById("checkout-form").style.display = "none";
 }
 
