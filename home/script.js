@@ -1,9 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
-
 // Initialize Supabase
-const SUPABASE_URL = "https://etmxbelqfwpbrvtucxhr.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0bXhiZWxxZndwYnJ2dHVjeGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkzMTk1NDIsImV4cCI6MjA1NDg5NTU0Mn0.XWOH2RMftx_JO-UCABTSnI4kv_-h8-Y-J8z6v_FJ5ro";
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseUrl = 'https://etmxbelqfwpbrvtucxhr.supabase.co'; 
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0bXhiZWxxZndwYnJ2dHVjeGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkzMTk1NDIsImV4cCI6MjA1NDg5NTU0Mn0.XWOH2RMftx_JO-UCABTSnI4kv_-h8-Y-J8z6v_FJ5ro'; 
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 let cart = [];
 let selectedMethod = "Delivery";
@@ -63,8 +61,8 @@ function removeItem(index) {
 // Proceed to checkout - display the form inside the cart
 function proceedToCheckout() {
     const checkoutForm = document.getElementById("checkout-form");
-    checkoutForm.style.display = (checkoutForm.style.display === "none" || checkoutForm.style.display === "") 
-        ? "block" 
+    checkoutForm.style.display = (checkoutForm.style.display === "none" || checkoutForm.style.display === "")
+        ? "block"
         : "none";
 }
 
@@ -81,55 +79,68 @@ async function placeOrder() {
     const lastName = document.getElementById("last-name").value;
     const email = document.getElementById("email").value;
     const address = document.getElementById("address").value;
-    const totalPrice = document.getElementById("total-price").textContent;
 
     if (!firstName || !lastName || !email || !address) {
         alert("Please fill in all fields before placing your order.");
         return;
     }
 
-    // Save order to Supabase
-    const { data, error } = await supabase.from("orders").insert([
-        {
-            first_name: firstName,
-            last_name: lastName,
-            email: email,
-            address: address,
-            order_method: selectedMethod,
-            payment_method: selectedPayment,
-            items: cart,
-            total_price: totalPrice
+    const totalPrice = document.getElementById("total-price").textContent;
+
+    document.getElementById("order-summary").innerHTML = "<p>Processing your order...</p>"; // Loading message
+
+    try {
+        const { error } = await supabase
+            .from('orders')
+            .insert([
+                {
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: email,
+                    address: address,
+                    order_method: selectedMethod,
+                    payment_method: selectedPayment,
+                    items: cart, // Directly insert the cart array as JSON
+                    total_price: parseFloat(totalPrice), // Parse to number, use totalPrice variable
+                },
+            ]);
+
+        if (error) {
+            console.error("Error inserting order:", error);
+            alert("There was an error placing your order. Please try again.");
+            document.getElementById("order-summary").innerHTML = ""; // Clear loading message
+            return; // Stop execution if there's an error
         }
-    ]);
 
-    if (error) {
-        console.error("Error saving order:", error);
-        alert("Something went wrong while placing your order.");
-        return;
+        // Show Order Summary
+        let orderSummary = `<h3>Thank you for ordering, ${firstName} ${lastName}!</h3>`;
+        orderSummary += `<p>Email: ${email}</p>`;
+        orderSummary += `<p>Address: ${address}</p>`;
+        orderSummary += `<p>Order Method: ${selectedMethod}</p>`;
+        orderSummary += `<p>Payment Method: ${selectedPayment}</p>`;
+        orderSummary += `<h4>Order Summary:</h4><ul>`;
+
+        cart.forEach(item => {
+            orderSummary += `<li>${item.name} - ₱${item.price} x ${item.qty}</li>`;
+        });
+
+        orderSummary += `</ul><h3>Total: ₱${totalPrice}</h3>`; // Use totalPrice variable
+        orderSummary += `<button onclick="orderAgain()">Order Again</button>`;
+
+        document.getElementById("order-summary").innerHTML = orderSummary;
+        cart = [];
+        updateCart();
+        document.getElementById("checkout-form").style.display = "none";
+
+        alert("Order placed successfully!"); // Confirmation after summary
+
+    } catch (err) {
+        console.error("Error placing order:", err);
+        alert("An unexpected error occurred. Please try again later.");
+        document.getElementById("order-summary").innerHTML = ""; // Clear loading message
     }
-
-    // Show Order Summary
-    let orderSummary = `<h3>Thank you for ordering, ${firstName} ${lastName}!</h3>`;
-    orderSummary += `<p>Email: ${email}</p>`;
-    orderSummary += `<p>Address: ${address}</p>`;
-    orderSummary += `<p>Order Method: ${selectedMethod}</p>`;
-    orderSummary += `<p>Payment Method: ${selectedPayment}</p>`;
-    orderSummary += `<h4>Order Summary:</h4><ul>`;
-
-    cart.forEach(item => {
-        orderSummary += `<li>${item.name} - ₱${item.price} x ${item.qty}</li>`;
-    });
-
-    orderSummary += `</ul><h3>Total: ₱${totalPrice}</h3>`;
-    orderSummary += `<button onclick="orderAgain()">Order Again</button>`;
-
-    document.getElementById("order-summary").innerHTML = orderSummary;
-
-    // Clear cart after placing order
-    cart = [];
-    updateCart();
-    document.getElementById("checkout-form").style.display = "none";
 }
+
 
 // Reset the order process
 function orderAgain() {
