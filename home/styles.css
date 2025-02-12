@@ -285,6 +285,12 @@ input:focus {
     margin-bottom: 10px;
 }
 
+.footer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; 
+}
+
 .footer-info p {
     display: flex;
     align-items: center;
@@ -301,11 +307,13 @@ input:focus {
 
 .footer-social {
     margin-top: 10px;
+    display: flex;
+    align-items: center;
 }
 
 .footer-social a img {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
     transition: transform 0.3s ease;
 }
 
@@ -314,10 +322,10 @@ input:focus {
 }
 
 .footer-rights {
-    font-size: 15px;
+    font-size: 14px;
     color: #000;
     font-weight: bold;
     text-align: center;
-    width: 100%; 
-    margin-top: 20px; 
+    width: 100%;
+    margin-top: 15px; 
 }
