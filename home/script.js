@@ -7,13 +7,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let selectedMethod = "Delivery";
     let selectedPayment = "Gcash";
 
-    function selectMethod(method) {
+    window.selectMethod = function (method) {
         selectedMethod = method;
         document.getElementById("delivery").classList.toggle("selected", method === "Delivery");
         document.getElementById("pickup").classList.toggle("selected", method === "Pick-up");
-    }
+    };
 
-    function addToCart(name, price) {
+    window.addToCart = function (name, price) {
         let existingItem = cart.find(item => item.name === name);
         if (existingItem) {
             existingItem.qty++;
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cart.push({ name, price, qty: 1 });
         }
         updateCart();
-    }
+    };
 
     function updateCart() {
         const cartItemsContainer = document.getElementById("cart-items");
@@ -42,29 +42,29 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("total-price").textContent = total;
     }
 
-    function updateQty(index, qty) {
+    window.updateQty = function (index, qty) {
         if (qty < 1) qty = 1;
         cart[index].qty = parseInt(qty);
         updateCart();
-    }
+    };
 
-    function removeItem(index) {
+    window.removeItem = function (index) {
         cart.splice(index, 1);
         updateCart();
-    }
+    };
 
-    function proceedToCheckout() {
+    window.proceedToCheckout = function () {
         const checkoutForm = document.getElementById("checkout-form");
         checkoutForm.style.display = checkoutForm.style.display === "none" || checkoutForm.style.display === "" ? "block" : "none";
-    }
+    };
 
-    function selectPayment(method) {
+    window.selectPayment = function (method) {
         selectedPayment = method;
         document.getElementById("gcash").classList.toggle("selected", method === "Gcash");
         document.getElementById("cash").classList.toggle("selected", method === "Cash");
-    }
+    };
 
-    async function placeOrder() {
+    window.placeOrder = async function () {
         const firstName = document.getElementById("first-name").value;
         const lastName = document.getElementById("last-name").value;
         const contact = document.getElementById("contact").value;
@@ -145,12 +145,12 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error placing order:", error);
             alert("An error occurred while placing your order. Please try again.");
         }
-    }
+    };
 
-    function orderAgain() {
+    window.orderAgain = function () {
         cart = [];
         updateCart();
         document.getElementById("order-summary").innerHTML = "";
         document.getElementById("checkout-form").style.display = "none";
-    }
+    };
 });
