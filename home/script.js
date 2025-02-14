@@ -13,6 +13,8 @@ function selectMethod(method, methodId) {
 }
 
 function addToCart(menu_id, name, price) {
+    price = parseFloat(price); // Convert price to number
+
     let existingItem = cart.find(item => item.menu_id === menu_id);
     if (existingItem) {
         existingItem.qty++;
@@ -23,20 +25,20 @@ function addToCart(menu_id, name, price) {
 }
 
 function updateCart() {
-    const cartItemsContainer = document.getElementById("cart-items");
-    cartItemsContainer.innerHTML = "";
+    let cartContainer = document.getElementById("cart-items");
+    cartContainer.innerHTML = "";
+
     let total = 0;
-    cart.forEach((item, index) => {
-        total += item.price * item.qty;
-        cartItemsContainer.innerHTML += `
-            <div class="cart-item">
-                <span>${item.name} - ₱${item.price} x</span>
-                <input type="number" value="${item.qty}" min="1" onchange="updateQty(${index}, this.value)">
-                <button onclick="removeItem(${index})">❌</button>
-            </div>
-        `;
+
+    cart.forEach(item => {
+        let cartItem = document.createElement("div");
+        cartItem.innerHTML = `${item.name} - $${item.price} x ${item.qty}`;
+        cartContainer.appendChild(cartItem);
+
+        total += item.price * item.qty; // Ensure price is a number
     });
-    document.getElementById("total-price").textContent = total;
+
+    document.getElementById("total-price").innerText = total.toFixed(2);
 }
 
 function updateQty(index, qty) {
