@@ -1,7 +1,3 @@
-const supabaseUrl = "https://etmxbelqfwpbrvtucxhr.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0bXhiZWxxZndwYnJ2dHVjeGhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkzMTk1NDIsImV4cCI6MjA1NDg5NTU0Mn0.XWOH2RMftx_JO-UCABTSnI4kv_-h8-Y-J8z6v_FJ5ro";
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
 let cart = [];
 let selectedMethod = "Delivery";
 let selectedPayment = "Gcash";
@@ -32,13 +28,13 @@ function updateCart() {
 
     cart.forEach((item, index) => {
         total += item.price * item.qty;
-        cartItemsContainer.innerHTML += 
+        cartItemsContainer.innerHTML += `
             <div class="cart-item">
                 <span>${item.name} - ₱${item.price} x</span>
                 <input type="number" value="${item.qty}" min="1" onchange="updateQty(${index}, this.value)">
                 <button onclick="removeItem(${index})">❌</button>
             </div>
-        ;
+        `;
     });
 
     document.getElementById("total-price").textContent = total;
@@ -72,62 +68,43 @@ function selectPayment(method) {
     document.getElementById("cash").classList.toggle("selected", method === "Cash");
 }
 
-async function placeOrder() {
+// Place Order and Show Order Summary (inside cart)
+function placeOrder() {
     const firstName = document.getElementById("first-name").value;
     const lastName = document.getElementById("last-name").value;
     const email = document.getElementById("email").value;
     const address = document.getElementById("address").value;
 
-    if (!firstName || !lastName || !email || (!address && selectedMethod === "Delivery")) {
-        alert("Please fill in all required fields before placing your order.");
+    if (!firstName || !lastName || !email || !address) {
+        alert("Please fill in all fields before placing your order.");
         return;
     }
 
-    const totalPrice = parseFloat(document.getElementById("total-price").textContent);
+    let orderSummary = `<h3>Thank you for ordering, ${firstName} ${lastName}!</h3>`;
+    orderSummary += `<p>Email: ${email}</p>`;
+    orderSummary += `<p>Address: ${address}</p>`;
+    orderSummary += `<p>Order Method: ${selectedMethod}</p>`;
+    orderSummary += `<p>Payment Method: ${selectedPayment}</p>`;
+    orderSummary += `<h4>Order Summary:</h4><ul>`;
+
+    cart.forEach(item => {
+        orderSummary += `<li>${item.name} - ₱${item.price} x ${item.qty}</li>`;
+    });
+
+    orderSummary += `</ul><h3>Total: ₱${document.getElementById('total-price').textContent}</h3>`;
     
-    const orderData = {
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        address: address || null,
-        order_method: selectedMethod,
-        payment_method: selectedPayment,
-        cart: JSON.stringify(cart),
-        total_price: totalPrice
-    };
+    // Add "Order Again" button
+    orderSummary += `<button onclick="orderAgain()">Order Again</button>`;
 
-    // Insert order data into Supabase
-    const { data, error } = await supabaseClient
-        .from("orders")
-        .insert([orderData]);
+    // Show summary inside cart
+    document.getElementById("order-summary").innerHTML = orderSummary;
 
-    if (error) {
-        console.error("Error placing order:", error);
-        alert("Failed to place order. Please try again.");
-    } else {
-        console.log("Order placed successfully:", data);
-        alert("Order placed successfully!");
+    // Clear cart after placing order
+    cart = [];
+    updateCart();
 
-        // Show order summary
-        document.getElementById("order-summary").innerHTML = 
-            <h3>Thank you for ordering, ${firstName} ${lastName}!</h3>
-            <p>Email: ${email}</p>
-            <p>Address: ${address || "N/A"}</p>
-            <p>Order Method: ${selectedMethod}</p>
-            <p>Payment Method: ${selectedPayment}</p>
-            <h4>Order Summary:</h4>
-            <ul>
-                ${cart.map(item => <li>${item.name} - ₱${item.price} x ${item.qty}</li>).join("")}
-            </ul>
-            <h3>Total: ₱${totalPrice}</h3>
-            <button onclick="orderAgain()">Order Again</button>
-        ;
-
-        // Clear cart after placing order
-        cart = [];
-        updateCart();
-        document.getElementById("checkout-form").style.display = "none";
-    }
+    // Hide checkout form after placing order
+    document.getElementById("checkout-form").style.display = "none";
 }
 
 // Reset the order process
