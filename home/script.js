@@ -3,33 +3,29 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 let cart = [];
-let selectedMethod = "Delivery";
-let selectedPayment = "Gcash";
+let selectedMethod = 1; // Default to Delivery (order_method_id = 1)
+let selectedPayment = 1; // Default to Gcash (payment_method_id = 1)
 
-// Select Order Method (Delivery/Pick-up)
-function selectMethod(method) {
-    selectedMethod = method;
+function selectMethod(method, methodId) {
+    selectedMethod = methodId;
     document.getElementById("delivery").classList.toggle("selected", method === "Delivery");
     document.getElementById("pickup").classList.toggle("selected", method === "Pick-up");
 }
 
-// Add items to the cart
-function addToCart(name, price) {
-    let existingItem = cart.find(item => item.name === name);
+function addToCart(menu_id, name, price) {
+    let existingItem = cart.find(item => item.menu_id === menu_id);
     if (existingItem) {
         existingItem.qty++;
     } else {
-        cart.push({ name, price, qty: 1 });
+        cart.push({ menu_id, name, price, qty: 1 });
     }
     updateCart();
 }
 
-// Update the cart display
 function updateCart() {
     const cartItemsContainer = document.getElementById("cart-items");
     cartItemsContainer.innerHTML = "";
     let total = 0;
-
     cart.forEach((item, index) => {
         total += item.price * item.qty;
         cartItemsContainer.innerHTML += `
@@ -40,100 +36,81 @@ function updateCart() {
             </div>
         `;
     });
-
     document.getElementById("total-price").textContent = total;
 }
 
-// Update quantity of an item
 function updateQty(index, qty) {
-    if (qty < 1) qty = 1;
-    cart[index].qty = parseInt(qty);
+    cart[index].qty = parseInt(qty) || 1;
     updateCart();
 }
 
-// Remove an item from the cart
 function removeItem(index) {
     cart.splice(index, 1);
     updateCart();
-}
-
-// Proceed to checkout - display the form inside the cart
-function proceedToCheckout() {
-    const checkoutForm = document.getElementById("checkout-form");
-    checkoutForm.style.display = (checkoutForm.style.display === "none" || checkoutForm.style.display === "") 
-        ? "block" 
-        : "none";
-}
-
-// Select Payment Method (Gcash/Cash)
-function selectPayment(method) {
-    selectedPayment = method;
-    document.getElementById("gcash").classList.toggle("selected", method === "Gcash");
-    document.getElementById("cash").classList.toggle("selected", method === "Cash");
 }
 
 async function placeOrder() {
     const firstName = document.getElementById("first-name").value;
     const lastName = document.getElementById("last-name").value;
     const email = document.getElementById("email").value;
-    const address = document.getElementById("address").value;
-
-    if (!firstName || !lastName || !email || (!address && selectedMethod === "Delivery")) {
+    const phone = document.getElementById("phone").value;
+    const address = document.getElementById("address").value || null;
+    
+    if (!firstName || !lastName || !email || (!address && selectedMethod === 1)) {
         alert("Please fill in all required fields before placing your order.");
         return;
     }
-
+    
     const totalPrice = parseFloat(document.getElementById("total-price").textContent);
     
-    const orderData = {
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        address: address || null,
-        order_method: selectedMethod,
-        payment_method: selectedPayment,
-        cart: JSON.stringify(cart),
-        total_price: totalPrice
-    };
-
-    // Insert order data into Supabase
-    const { data, error } = await supabaseClient
-        .from("orders")
-        .insert([orderData]);
-
-    if (error) {
-        console.error("Error placing order:", error);
-        alert("Failed to place order. Please try again.");
-    } else {
-        console.log("Order placed successfully:", data);
-        alert("Order placed successfully!");
-
-        // Show order summary
-        document.getElementById("order-summary").innerHTML = `
-            <h3>Thank you for ordering, ${firstName} ${lastName}!</h3>
-            <p>Email: ${email}</p>
-            <p>Address: ${address || "N/A"}</p>
-            <p>Order Method: ${selectedMethod}</p>
-            <p>Payment Method: ${selectedPayment}</p>
-            <h4>Order Summary:</h4>
-            <ul>
-                ${cart.map(item => `<li>${item.name} - ₱${item.price} x ${item.qty}</li>`).join("")}
-            </ul>
-            <h3>Total: ₱${totalPrice}</h3>
-            <button onclick="orderAgain()">Order Again</button>
-        `;
-
-        // Clear cart after placing order
-        cart = [];
-        updateCart();
-        document.getElementById("checkout-form").style.display = "none";
+    // Insert customer data
+    const { data: customerData, error: customerError } = await supabaseClient
+        .from("customers")
+        .insert([{ customer_fname: firstName, customer_lname: lastName, customer_email: email, customer_phone: phone, customer_address: address }])
+        .select("customer_id")
+        .single();
+    
+    if (customerError) {
+        console.error("Customer insertion error:", customerError);
+        alert("Failed to save customer details.");
+        return;
     }
-}
-
-// Reset the order process
-function orderAgain() {
+    
+    const customerId = customerData.customer_id;
+    
+    // Insert order data
+    const { data: orderData, error: orderError } = await supabaseClient
+        .from("orders")
+        .insert([{ total_price: totalPrice, customer_id: customerId, order_method_id: selectedMethod, payment_method_id: selectedPayment }])
+        .select("orders_id")
+        .single();
+    
+    if (orderError) {
+        console.error("Order insertion error:", orderError);
+        alert("Failed to place order.");
+        return;
+    }
+    
+    const orderId = orderData.orders_id;
+    
+    // Insert order items
+    const orderItems = cart.map(item => ({
+        orders_id: orderId,
+        menu_id: item.menu_id,
+        quantity: item.qty,
+        item_price: item.price
+    }));
+    
+    const { error: orderItemsError } = await supabaseClient.from("order_items").insert(orderItems);
+    
+    if (orderItemsError) {
+        console.error("Order items insertion error:", orderItemsError);
+        alert("Failed to save order items.");
+        return;
+    }
+    
+    alert("Order placed successfully!");
     cart = [];
     updateCart();
-    document.getElementById("order-summary").innerHTML = "";
     document.getElementById("checkout-form").style.display = "none";
 }
