@@ -72,16 +72,25 @@ function selectPayment(method) {
 function placeOrder() {
     const firstName = document.getElementById("first-name").value;
     const lastName = document.getElementById("last-name").value;
+    const contactNumber = document.getElementById("contact-number").value;
     const email = document.getElementById("email").value;
     const address = document.getElementById("address").value;
 
-    if (!firstName || !lastName || !email || !address) {
+    if (!firstName || !lastName || !contactNumber || !email || !address) {
         alert("Please fill in all fields before placing your order.");
+        return;
+    }
+
+    // Optional: Validate contact number (basic check for 11-digit PH format)
+    const phoneRegex = /^09\d{9}$/; // Matches PH mobile numbers (e.g., 09123456789)
+    if (!phoneRegex.test(contactNumber)) {
+        alert("Please enter a valid contact number (e.g., 09123456789).");
         return;
     }
 
     let orderSummary = `<h3>Thank you for ordering, ${firstName} ${lastName}!</h3>`;
     orderSummary += `<p>Email: ${email}</p>`;
+    orderSummary += `<p>Contact Number: ${contactNumber}</p>`;
     orderSummary += `<p>Address: ${address}</p>`;
     orderSummary += `<p>Order Method: ${selectedMethod}</p>`;
     orderSummary += `<p>Payment Method: ${selectedPayment}</p>`;
