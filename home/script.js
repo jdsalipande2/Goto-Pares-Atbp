@@ -81,13 +81,6 @@ function placeOrder() {
         return;
     }
 
-    // Optional: Validate contact number (basic check for 11-digit PH format)
-    const phoneRegex = /^09\d{9}$/; // Matches PH mobile numbers (e.g., 09123456789)
-    if (!phoneRegex.test(contactNumber)) {
-        alert("Please enter a valid contact number (e.g., 09123456789).");
-        return;
-    }
-
     let orderSummary = `<h3>Thank you for ordering, ${firstName} ${lastName}!</h3>`;
     orderSummary += `<p>Email: ${email}</p>`;
     orderSummary += `<p>Contact Number: ${contactNumber}</p>`;
