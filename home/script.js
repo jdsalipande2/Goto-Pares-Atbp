@@ -14,12 +14,12 @@ function selectMethod(method) {
 }
 
 // Add items to the cart
-function addToCart(name, price) {
-    let existingItem = cart.find(item => item.name === name);
+function addToCart(id, name, price) {
+    let existingItem = cart.find(item => item.id === id);
     if (existingItem) {
         existingItem.qty++;
     } else {
-        cart.push({ name, price, qty: 1 });
+        cart.push({ id, name, price, qty: 1 });
     }
     updateCart();
 }
@@ -41,7 +41,7 @@ function updateCart() {
         `;
     });
 
-    document.getElementById("total-price").textContent = total;
+    document.getElementById("total-price").textContent = total.toFixed(2);
 }
 
 // Update quantity of an item
@@ -73,19 +73,66 @@ function selectPayment(method) {
 }
 
 // Place Order and Show Order Summary (inside cart)
-function placeOrder() {
-    const firstName = document.getElementById("first-name").value;
-    const lastName = document.getElementById("last-name").value;
-    const email = document.getElementById("email").value;
-    const address = document.getElementById("address").value;
+async function placeOrder() {
+    const firstName = document.getElementById("first-name").value.trim();
+    const lastName = document.getElementById("last-name").value.trim();
+    const contactNumber = document.getElementById("contact-number").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const address = document.getElementById("address").value.trim();
 
-    if (!firstName || !lastName || !email || !address) {
+    if (!firstName || !lastName || !contactNumber || !email || !address) {
         alert("Please fill in all fields before placing your order.");
         return;
     }
 
+    // Insert customer into Supabase
+    let { data: customer, error } = await supabase
+        .from("customers")
+        .insert([{ 
+            customer_fname: firstName,
+            customer_lname: lastName,
+            customer_email: email,
+            customer_address: address,
+            customer_contact: contactNumber
+        }])
+        .select();
+
+    if (error) {
+        console.error("Error inserting customer:", error);
+        alert("Error saving customer details.");
+        return;
+    }
+
+    const customerId = customer[0].customer_id;
+    await saveOrder(customerId, firstName, lastName, email, contactNumber, address);
+}
+
+async function saveOrder(customerId, firstName, lastName, email, contactNumber, address) {
+    const totalPrice = parseFloat(document.getElementById("total-price").textContent);
+
+    // Insert order into Supabase
+    let { data: order, error } = await supabase
+        .from("orders")
+        .insert([{ 
+            customer_id: customerId,
+            order_method: selectedMethod,
+            payment_method: selectedPayment,
+            total_price: totalPrice
+        }])
+        .select();
+
+    if (error) {
+        console.error("Error inserting order:", error);
+        alert("Error saving order.");
+        return;
+    }
+
+    const orderId = order[0].order_id;
+    await saveOrderItems(orderId);
+
     let orderSummary = `<h3>Thank you for ordering, ${firstName} ${lastName}!</h3>`;
     orderSummary += `<p>Email: ${email}</p>`;
+    orderSummary += `<p>Contact Number: ${contactNumber}</p>`;
     orderSummary += `<p>Address: ${address}</p>`;
     orderSummary += `<p>Order Method: ${selectedMethod}</p>`;
     orderSummary += `<p>Payment Method: ${selectedPayment}</p>`;
@@ -95,7 +142,7 @@ function placeOrder() {
         orderSummary += `<li>${item.name} - ₱${item.price} x ${item.qty}</li>`;
     });
 
-    orderSummary += `</ul><h3>Total: ₱${document.getElementById('total-price').textContent}</h3>`;
+    orderSummary += `</ul><h3>Total: ₱${totalPrice.toFixed(2)}</h3>`;
     
     // Add "Order Again" button
     orderSummary += `<button onclick="orderAgain()">Order Again</button>`;
@@ -111,10 +158,30 @@ function placeOrder() {
     document.getElementById("checkout-form").style.display = "none";
 }
 
+async function saveOrderItems(orderId) {
+    let orderItems = cart.map(item => ({
+        order_id: orderId,
+        item_id: item.id, 
+        quantity: item.qty
+    }));
+
+    let { error } = await supabase.from("order_items").insert(orderItems);
+
+    if (error) {
+        console.error("Error inserting order items:", error);
+        alert("Error saving order items.");
+        return;
+    }
+
+    alert("Order placed successfully!");
+}
+
 // Reset the order process
 function orderAgain() {
     cart = [];
+    selectedMethod = "Delivery";
+    selectedPayment = "Gcash";
     updateCart();
-    document.getElementById("order-summary").innerHTML = "";
+    document.getElementById("order-summary").innerHTML = "<h3>Order placed successfully!</h3>";
     document.getElementById("checkout-form").style.display = "none";
 }
