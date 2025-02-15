@@ -42,8 +42,9 @@ function updateCart() {
 
 // Update quantity of an item
 function updateQty(index, qty) {
-    if (qty < 1) qty = 1;
-    cart[index].qty = parseInt(qty);
+    qty = parseInt(qty);
+    if (isNaN(qty) || qty < 1) qty = 1;
+    cart[index].qty = qty;
     updateCart();
 }
 
@@ -55,10 +56,14 @@ function removeItem(index) {
 
 // Proceed to checkout - display the form inside the cart
 function proceedToCheckout() {
-    const checkoutForm = document.getElementById("checkout-form");
-    checkoutForm.style.display = (checkoutForm.style.display === "none" || checkoutForm.style.display === "") 
-        ? "block" 
-        : "none";
+    if (cart.length === 0) {
+        alert("Your cart is empty. Add items before proceeding to checkout.");
+        return;
+    }
+    document.getElementById("checkout-form").style.display = 
+        (document.getElementById("checkout-form").style.display === "none" || 
+         document.getElementById("checkout-form").style.display === "") 
+        ? "block" : "none";
 }
 
 // Select Payment Method (Gcash/Cash)
@@ -68,23 +73,31 @@ function selectPayment(method) {
     document.getElementById("cash").classList.toggle("selected", method === "Cash");
 }
 
-// Place Order and Show Order Summary (inside cart)
+// Place Order and Show Order Summary
 function placeOrder() {
-    const firstName = document.getElementById("first-name").value;
-    const lastName = document.getElementById("last-name").value;
+    const firstName = document.getElementById("first-name").value.trim();
+    const lastName = document.getElementById("last-name").value.trim();
     const contactNumber = document.getElementById("contact-number").value.trim();
-    const email = document.getElementById("email").value;
-    const address = document.getElementById("address").value;
+    const email = document.getElementById("email").value.trim();
+    const address = document.getElementById("address").value.trim();
 
-    if (!firstName || !lastName || !contactNumber || !email || !address) {
-        alert("Please fill in all fields before placing your order.");
+    // Check required fields
+    if (!firstName || !lastName || !contactNumber || !email || (selectedMethod === "Delivery" && !address)) {
+        alert("Please fill in all required fields before placing your order.");
         return;
     }
 
+    // Validate contact number (must be 10 or 11 digits)
+    if (!/^\d{10,11}$/.test(contactNumber)) {
+        alert("Please enter a valid contact number.");
+        return;
+    }
+
+    // Generate Order Summary
     let orderSummary = `<h3>Thank you for ordering, ${firstName} ${lastName}!</h3>`;
     orderSummary += `<p>Contact Number: ${contactNumber}</p>`;
     orderSummary += `<p>Email: ${email}</p>`;
-    orderSummary += `<p>Address: ${address}</p>`;
+    if (selectedMethod === "Delivery") orderSummary += `<p>Address: ${address}</p>`;
     orderSummary += `<p>Order Method: ${selectedMethod}</p>`;
     orderSummary += `<p>Payment Method: ${selectedPayment}</p>`;
     orderSummary += `<h4>Order Summary:</h4><ul>`;
