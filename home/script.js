@@ -1,8 +1,6 @@
-
-import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = 'https://zrkgymfoqhmmrwjzpvif.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpya2d5bWZvcWhtbXJ3anpwdmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1ODE3OTUsImV4cCI6MjA1NTE1Nzc5NX0.Zucx_Ic6s8yoZv6aAAxoRlHGfI4JXiP1-pjYUPtJAAE'
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let cart = [];
 let selectedMethod = "Delivery";
