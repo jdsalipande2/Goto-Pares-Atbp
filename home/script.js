@@ -1,3 +1,9 @@
+
+import { createClient } from '@supabase/supabase-js'
+const supabaseUrl = 'https://zrkgymfoqhmmrwjzpvif.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpya2d5bWZvcWhtbXJ3anpwdmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1ODE3OTUsImV4cCI6MjA1NTE1Nzc5NX0.Zucx_Ic6s8yoZv6aAAxoRlHGfI4JXiP1-pjYUPtJAAE'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
 let cart = [];
 let selectedMethod = "Delivery";
 let selectedPayment = "Gcash";
@@ -74,26 +80,54 @@ function selectPayment(method) {
 }
 
 // Place Order and Show Order Summary
-function placeOrder() {
+async function placeOrder() {
     const firstName = document.getElementById("first-name").value.trim();
     const lastName = document.getElementById("last-name").value.trim();
     const contactNumber = document.getElementById("contact-number").value.trim();
     const email = document.getElementById("email").value.trim();
     const address = document.getElementById("address").value.trim();
 
-    // Check required fields
     if (!firstName || !lastName || !contactNumber || !email || (selectedMethod === "Delivery" && !address)) {
         alert("Please fill in all required fields before placing your order.");
         return;
     }
 
-    // Validate contact number (must be 10 or 11 digits)
     if (!/^\d{10,11}$/.test(contactNumber)) {
         alert("Please enter a valid contact number.");
         return;
     }
 
-    // Generate Order Summary
+    const orderMethodId = selectedMethod === "Delivery" ? 1 : 2;
+    const paymentMethodId = selectedPayment === "Gcash" ? 1 : 2;
+
+    // Calculate Total Price
+    let totalPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+    const orderData = {
+        customer_fname: firstName,
+        customer_lname: lastName,
+        customer_contact: contactNumber,
+        customer_email: email,
+        customer_address: orderMethodId === 1 ? address : null,
+        order_method_id: orderMethodId,
+        payment_method_id: paymentMethodId,
+        items: cart,  // Keep as an array; Supabase can handle JSON
+        total_price: totalPrice,
+        order_date: new Date().toISOString()
+    };
+
+    // Save to Supabase
+    const { data, error } = await supabase.from("orders").insert([orderData]);
+
+    if (error) {
+        console.error("Error placing order:", error);
+        alert("Failed to place order. Please try again.");
+        return;
+    }
+
+    alert("Order placed successfully!");
+
+    // Show Order Summary
     let orderSummary = `<h3>Thank you for ordering, ${firstName} ${lastName}!</h3>`;
     orderSummary += `<p>Contact Number: ${contactNumber}</p>`;
     orderSummary += `<p>Email: ${email}</p>`;
@@ -106,19 +140,13 @@ function placeOrder() {
         orderSummary += `<li>${item.name} - ₱${item.price} x ${item.qty}</li>`;
     });
 
-    orderSummary += `</ul><h3>Total: ₱${document.getElementById('total-price').textContent}</h3>`;
-    
-    // Add "Order Again" button
+    orderSummary += `</ul><h3>Total: ₱${totalPrice}</h3>`;
     orderSummary += `<button onclick="orderAgain()">Order Again</button>`;
 
-    // Show summary inside cart
     document.getElementById("order-summary").innerHTML = orderSummary;
 
-    // Clear cart after placing order
     cart = [];
     updateCart();
-
-    // Hide checkout form after placing order
     document.getElementById("checkout-form").style.display = "none";
 }
 
