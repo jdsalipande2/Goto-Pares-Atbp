@@ -58,7 +58,7 @@ body {
 .category-grid {
     display: grid;
     grid-template-columns: repeat(2, auto);
-    gap: 100px;
+    gap: 50px;
     margin-bottom: 30px;
     width: fit-content;
     margin-left: auto;
