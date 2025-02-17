@@ -70,13 +70,18 @@ body {
 }
 
 .category img {
-    width: 300px; 
-    height: 300px; 
-    object-fit: cover;
+    width: auto; 
+    height: auto; 
+    max-height: 200px; 
     border-radius: 8px; 
     border: 3px solid #d3512b; 
     display: block; 
     margin: 0 auto; 
+    transition: transform 0.3s ease-in-out; 
+}
+
+.category img:hover {
+    transform: scale(1.1);
 }
 
 .category p {
