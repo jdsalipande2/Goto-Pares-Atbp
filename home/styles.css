@@ -280,52 +280,45 @@ input:focus {
 
 .footer-logo img {
     width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin-bottom: 10px;
+    height: 100px;
 }
 
-.footer-info {
+.footer-details {
     display: flex;
     flex-direction: column;
-    gap: 5px; 
-}
-
-.footer-info p {
-    display: flex;
-    align-items: center;
-    font-size: 15px;
-    color: #000;
-    margin: 5px 0;
-}
-
-.footer-info img {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-}
-
-.footer-social {
-    margin-top: 10px;
-    display: flex;
     align-items: center;
 }
 
-.footer-social a img {
-    width: 30px;
-    height: 30px;
-    transition: transform 0.3s ease;
+.footer-item {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
 }
 
-.footer-social a img:hover {
-    transform: scale(1.1);
+.footer-icon {
+    width: 35px;
+    height: 35px;
+    margin-right: 10px;
+}
+
+.footer-item p {
+    font-size: 1em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.footer-item a {
+    color: white;
+    font-size: 1.8em;
+    text-decoration: none;
+}
+
+.footer-item a:hover {
+    color: #ff5722;
 }
 
 .footer-rights {
-    font-size: 14px;
-    color: #000;
-    font-weight: bold;
     text-align: center;
-    width: 100%;
-    margin-top: 15px; 
+    font-size: 0.9em;
+    margin-top: 15px;
 }
