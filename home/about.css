@@ -109,21 +109,33 @@ body {
 /* Footer Section (Contact) */
 .contact {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center; 
     padding: 20px;
     background-color: #f1b60f;
     color: white;
+}
+
+.contact-details {
+    display: flex;
+    justify-content: space-between; 
+    width: 100%;
+}
+
+.contact-logo {
+    text-align: center;
+    margin-bottom: 10px; 
+}
+
+.contact-logo img {
+    height: auto;
+    width: auto; 
 }
 
 .contact-item {
     display: flex;
     align-items: center;
     margin: 10px 0;
-}
-
-.contact-item i {
-    font-size: 1.8em;
-    margin-bottom: 10px;
 }
 
 .contact-icon {
@@ -146,4 +158,10 @@ body {
 
 .contact-item a:hover {
     color: #ff5722;
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9em;
 }
