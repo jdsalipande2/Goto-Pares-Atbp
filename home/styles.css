@@ -279,8 +279,8 @@ input:focus {
 }
 
 .footer-logo img {
-    width: 80px;
-    height: 100px;
+    height: 80px;
+    width: 100px; 
 }
 
 .footer-details {
